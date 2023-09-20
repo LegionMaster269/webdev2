@@ -3,28 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webcam Example</title>
+    <title>Text-to-Speech Example</title>
 </head>
 <body>
-    <h1>Webcam Example</h1>
-    <video id="webcam" autoplay></video>
+    <h1>Text-to-Speech Example</h1>
+    <textarea id="textToSpeak" placeholder="Enter text to speak"></textarea>
+    <button id="speakButton">Speak</button>
 
     <script>
-        async function setupWebcam() {
-            const videoElement = document.getElementById("webcam");
+        const textToSpeak = document.getElementById("textToSpeak");
+        const speakButton = document.getElementById("speakButton");
 
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        speakButton.addEventListener("click", () => {
+            const text = textToSpeak.value;
 
-                // Assign the webcam stream to the video element
-                videoElement.srcObject = stream;
-            } catch (error) {
-                console.error("Error accessing webcam:", error);
+            // Check if the Web Speech API is available
+            if ('speechSynthesis' in window) {
+                const synth = window.speechSynthesis;
+                const utterance = new SpeechSynthesisUtterance(text);
+
+                // Choose a voice (optional)
+                const voices = synth.getVoices();
+                if (voices.length > 0) {
+                    utterance.voice = voices[0]; // You can select a different voice
+                }
+
+                // Speak the text
+                synth.speak(utterance);
+            } else {
+                alert("Text-to-speech is not supported in this browser.");
             }
-        }
-
-        // Call the setupWebcam function to start the webcam feed
-        setupWebcam();
+        });
     </script>
 </body>
 </html>
