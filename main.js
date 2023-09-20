@@ -11,7 +11,7 @@ connectButton.addEventListener("click", async () => {
   try {
     // Request Bluetooth device
     bluetoothDevice = await navigator.bluetooth.requestDevice({
-      filters: [{ services: ['battery_service'] }],
+      filters: [{ services: ['e3b96d5b-49ef-48ba-b461-dbde61df1284'] }],
     });
 
     // Connect to the Bluetooth device
