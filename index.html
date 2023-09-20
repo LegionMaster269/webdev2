@@ -4,12 +4,7 @@
     <title>Bluetooth Text-to-Speech</title>
 </head>
 <body>
-    <h1>Bluetooth Text-to-Speech</h1>
-    <button id="connectButton">Connect to Android Phone</button>
-    <button id="speakButton" disabled>Speak</button>
-    <textarea id="textToSpeak" placeholder="Enter text to speak"></textarea>
     
-    <script src="main.js"></script>
 
 
     <h1>Geolocation Example</h1>
@@ -84,6 +79,37 @@
         // Call the setupWebcam function to start the webcam feed
         setupWebcam();
     </script>
+
+
+     <textarea id="textToSpeak" rows="4" cols="50" placeholder="Enter text to speak"></textarea>
+  <button id="speakButton">Speak</button>
+
+  <script>
+    const textToSpeak = document.getElementById('textToSpeak');
+    const speakButton = document.getElementById('speakButton');
+
+    // Check if the Speech Synthesis API is available in the browser
+    if ('speechSynthesis' in window) {
+      const synth = window.speechSynthesis;
+
+      speakButton.addEventListener('click', () => {
+        const text = textToSpeak.value;
+
+        // Create a new speech synthesis utterance
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        // Optional: Set properties like voice, rate, pitch, etc.
+        // utterance.voice = synth.getVoices()[0]; // You can choose a specific voice
+        // utterance.rate = 1.0; // Speech rate
+        // utterance.pitch = 1.0; // Speech pitch
+
+        // Speak the text
+        synth.speak(utterance);
+      });
+    } else {
+      alert('Text-to-speech is not supported in this browser.');
+    }
+  </script>
 </body>
 </html>
 
