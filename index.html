@@ -10,6 +10,39 @@
     <textarea id="textToSpeak" placeholder="Enter text to speak"></textarea>
     
     <script src="main.js"></script>
-
+    <script src="gps.js"></script>
 </body>
 </html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Example</title>
+</head>
+<body>
+    <h1>Webcam Example</h1>
+    <video id="webcam" autoplay></video>
+
+    <script>
+        async function setupWebcam() {
+            const videoElement = document.getElementById("webcam");
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+                // Assign the webcam stream to the video element
+                videoElement.srcObject = stream;
+            } catch (error) {
+                console.error("Error accessing webcam:", error);
+            }
+        }
+
+        // Call the setupWebcam function to start the webcam feed
+        setupWebcam();
+    </script>
+</body>
+</html>
+
