@@ -1,39 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text-to-Speech Example</title>
+  <title>Face Detection with tracking.js</title>
 </head>
 <body>
-    <h1>Text-to-Speech Example</h1>
-    <textarea id="textToSpeak" placeholder="Enter text to speak"></textarea>
-    <button id="speakButton">Speak</button>
+  <video id="video" width="640" height="480" autoplay></video>
+  <canvas id="canvas" width="640" height="480"></canvas>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.5/tracking.js"></script>
+  
+  <script>
+    // Get video element and canvas
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
 
-    <script>
-        const textToSpeak = document.getElementById("textToSpeak");
-        const speakButton = document.getElementById("speakButton");
+    // Initialize the tracker
+    const tracker = new tracking.ObjectTracker('face');
 
-        speakButton.addEventListener("click", () => {
-            const text = textToSpeak.value;
+    // Attach the video stream to the video element
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        video.srcObject = stream;
+      })
+      .catch((error) => {
+        console.error('Error accessing the webcam:', error);
+      });
 
-            // Check if the Web Speech API is available
-            if ('speechSynthesis' in window) {
-                const synth = window.speechSynthesis;
-                const utterance = new SpeechSynthesisUtterance(text);
+    // Start tracking when the video is loaded
+    video.addEventListener('canplay', () => {
+      video.play();
+      tracker.setInitialScale(4);
+      tracker.setStepSize(2);
+      tracker.setEdgesDensity(0.1);
+      tracking.track('#video', tracker);
 
-                // Choose a voice (optional)
-                const voices = synth.getVoices();
-                if (voices.length > 0) {
-                    utterance.voice = voices[0]; // You can select a different voice
-                }
+      tracker.on('track', (event) => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
 
-                // Speak the text
-                synth.speak(utterance);
-            } else {
-                alert("Text-to-speech is not supported in this browser.");
-            }
+        event.data.forEach((rect) => {
+          context.strokeStyle = '#FF0000';
+          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
         });
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>
