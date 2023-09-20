@@ -1,58 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Geolocation Example</title>
+    <title>Web USB API Example</title>
 </head>
 <body>
-    <h1>Geolocation Example</h1>
-    <p>Click the buttons below to get your current location:</p>
-
-    <button onclick="getLocation()">Get Location</button>
-    <button onclick="clearLocation()">Clear Location</button>
-
-    <p id="location"></p>
+    <h1>Web USB API Example</h1>
+    <button id="connectButton">Connect to USB Device</button>
+    <button id="disconnectButton" disabled>Disconnect</button>
+    <div id="output"></div>
 
     <script>
-        // Function to get the user's current location
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
-            } else {
-                document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
+        // Function to connect to a USB device
+        async function connectToDevice() {
+            try {
+                const device = await navigator.usb.requestDevice({ filters: [] });
+
+                await device.open();
+                await device.selectConfiguration(1); // Select the first configuration (usually 1)
+                await device.claimInterface(0); // Claim the first interface (usually 0)
+
+                document.getElementById('connectButton').disabled = true;
+                document.getElementById('disconnectButton').disabled = false;
+
+                // Access the device and perform operations here
+                // For example, you can read data from or send data to the device.
+                // You would typically use device.transferIn() and device.transferOut() for data transfer.
+
+                // Display device information
+                const output = document.getElementById('output');
+                output.innerHTML = `Connected to USB device:<br>`;
+                output.innerHTML += `Product ID: ${device.productId}<br>`;
+                output.innerHTML += `Vendor ID: ${device.vendorId}<br>`;
+                output.innerHTML += `Serial Number: ${device.serialNumber || 'N/A'}<br>`;
+            } catch (error) {
+                console.error('Error connecting to USB device:', error);
             }
         }
 
-        // Function to display the user's current location
-        function showPosition(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+        // Function to disconnect from the USB device
+        async function disconnectDevice() {
+            try {
+                const device = await navigator.usb.getDevices();
+                if (device.length > 0) {
+                    await device[0].close();
+                }
 
-            const locationText = `Latitude: ${latitude}, Longitude: ${longitude}`;
-            document.getElementById("location").innerHTML = locationText;
-        }
-
-        // Function to handle geolocation errors
-        function showError(error) {
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    document.getElementById("location").innerHTML = "User denied the request for geolocation.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    document.getElementById("location").innerHTML = "Location information is unavailable.";
-                    break;
-                case error.TIMEOUT:
-                    document.getElementById("location").innerHTML = "The request to get user location timed out.";
-                    break;
-                case error.UNKNOWN_ERROR:
-                    document.getElementById("location").innerHTML = "An unknown error occurred.";
-                    break;
+                document.getElementById('connectButton').disabled = false;
+                document.getElementById('disconnectButton').disabled = true;
+                document.getElementById('output').innerHTML = 'Disconnected from USB device.';
+            } catch (error) {
+                console.error('Error disconnecting from USB device:', error);
             }
         }
 
-        // Function to clear the location display
-        function clearLocation() {
-            document.getElementById("location").innerHTML = "";
-        }
+        // Event listeners for the buttons
+        document.getElementById('connectButton').addEventListener('click', connectToDevice);
+        document.getElementById('disconnectButton').addEventListener('click', disconnectDevice);
     </script>
 </body>
 </html>
