@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Motion Detection</title>
+    <title>Camera View</title>
     <style>
         /* Add CSS styles for the elements here */
+        #cameraView {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div id="cameraView"></div>
+    <div id="cameraView">
+        <video id="videoElement" autoplay></video>
+    </div>
     <div id="logs"></div>
     <input type="range" id="sensitivity" value="50" min="0" max="100">
     <select id="mosaic">
@@ -22,6 +27,17 @@
         let sensitivity = 50; // percent
         let minPeriod = 500; // milliseconds
         let mosaic = "3x3";
+
+        // Access the camera and display the video stream
+        async function openCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const videoElement = document.getElementById('videoElement');
+                videoElement.srcObject = stream;
+            } catch (error) {
+                console.error('Error accessing the camera:', error);
+            }
+        }
 
         // Function to start motion detection
         function startDetection() {
@@ -56,8 +72,9 @@
             log(`Saved picture to ${file}`);
         }
 
-        // Start motion detection when the page loads
+        // Start motion detection and open the camera when the page loads
         startDetection();
+        openCamera();
     </script>
 </body>
 </html>
